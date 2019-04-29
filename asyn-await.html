@@ -1,0 +1,43 @@
+<body>
+    <pre></pre>
+    
+</body>
+<script>
+const url = `https://codegrid-drill-06.netlify.com/list.json`;
+
+function jsonItem(id){
+    return `https://codegrid-drill-06.netlify.com/items/${id}.json`;
+}
+
+async function jsonFetch(url){
+    try{
+        const res = await fetch(url);
+        if(res.ok){
+         const json = await res.json();
+         return json;   
+        }
+    }catch(e){
+        throw new Error(e);
+    }
+}
+
+async function main(){
+    var pre = document.querySelector('pre');
+    try{
+        const boxs = await jsonFetch(url);
+        const items = await Promise.all(boxs.map(function(box){
+            return jsonFetch(jsonItem(box.id));
+        }))
+        const result = await items.map(function(item){
+           return `${item.name}: ${item.weight}` 
+        }).join(`\n`);
+        pre.textContent = result;
+        console.log(result);
+    }catch(e){
+        console.error(e);
+    }
+}
+
+main();
+
+</script>

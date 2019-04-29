@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- HTML5 Hello world by kirupa - http://www.kirupa.com/html5/getting_your_feet_wet_html5_pg1.htm -->
+<html lang="en-us">
+
+<head>
+<meta charset="utf-8">
+<title>Asynchronous communication</title>
+
+</head>
+
+<body>
+
+
+
+<script> 
+
+const listjsonUrl = "https://codegrid-drill-06.netlify.com/list.json";
+const itemjsonUrl = "https://codegrid-drill-06.netlify.com/items/{id}.json";
+
+fetchJson(listjsonUrl).then(function(list){
+	return Promise.all(
+		list.map(item =>fetchJson(craeteItemUrl(item.id)))
+	).then(function(res){
+		console.log(res.map(render).join("\n"));	
+	});
+}).catch(function(error){
+	console.error(error.message);	
+});
+
+
+function fetchJson(url){
+	return fetch(url).then(function(res){
+		return res.json();
+	});
+}
+function craeteItemUrl(itemid){
+	return itemjsonUrl.replace("{id}", itemid);
+}
+function render(item){
+	return `${item.name}: ${item.weight}`;
+}
+
+</script>
+</body>
+</html>
